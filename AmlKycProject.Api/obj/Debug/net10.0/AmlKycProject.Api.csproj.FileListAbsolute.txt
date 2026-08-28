@@ -1,0 +1,8 @@
+C:\Users\KAHRAMAN\Desktop\Enes Kod\Project\AmlKycProject.Api\obj\Debug\net10.0\AmlKycProject.Api.csproj.AssemblyReference.cache
+C:\Users\KAHRAMAN\Desktop\Enes Kod\Project\AmlKycProject.Api\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\Users\KAHRAMAN\Desktop\Enes Kod\Project\AmlKycProject.Api\obj\Debug\net10.0\AmlKycProject.Api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\KAHRAMAN\Desktop\Enes Kod\Project\AmlKycProject.Api\obj\Debug\net10.0\AmlKycProject.Api.AssemblyInfoInputs.cache
+C:\Users\KAHRAMAN\Desktop\Enes Kod\Project\AmlKycProject.Api\obj\Debug\net10.0\AmlKycProject.Api.AssemblyInfo.cs
+C:\Users\KAHRAMAN\Desktop\Enes Kod\Project\AmlKycProject.Api\obj\Debug\net10.0\AmlKycProject.Api.csproj.CoreCompileInputs.cache
+C:\Users\KAHRAMAN\Desktop\Enes Kod\Project\AmlKycProject.Api\obj\Debug\net10.0\AmlKycProject.Api.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\KAHRAMAN\Desktop\Enes Kod\Project\AmlKycProject.Api\obj\Debug\net10.0\AmlKycProject.Api.MvcApplicationPartsAssemblyInfo.cache

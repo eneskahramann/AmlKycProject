@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  postgres-db:
+    image: postgres:latest
+    container_name: aml_kyc_db
+    environment:
+      POSTGRES_USER: aml_user
+      POSTGRES_PASSWORD: aml_password
+      POSTGRES_DB: aml_kyc_db
+    ports:
+      - "5432:5432"
+    restart: always
