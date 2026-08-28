@@ -1,3 +1,5 @@
+namespace AmlKycProject.Api.Entities;
+
 public class Sanction // Kara liste
 {
     public int Id {get;set;}

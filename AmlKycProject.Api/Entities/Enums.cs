@@ -1,4 +1,5 @@
-// Models/Enums.cs
+namespace AmlKycProject.Api.Entities;
+
 public enum RiskLevel
 {
     Low = 1,      // between 0-39 

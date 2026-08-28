@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+namespace AmlKycProject.Api.Entities;
 
 public class RiskLog 
 {

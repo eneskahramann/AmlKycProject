@@ -1,3 +1,5 @@
+namespace AmlKycProject.Api.Entities;
+
 public class Alert 
 {
     public int Id {get;set;}

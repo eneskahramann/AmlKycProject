@@ -1,3 +1,5 @@
+namespace AmlKycProject.Api.Entities;
+
 public class Transfer 
 {
     public int Id{get;set;}

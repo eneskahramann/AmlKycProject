@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using AmlKycProject.Api.Data; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,8 +7,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// using satırını sildik, DbContext'i kendi tam adresiyle (namespace) buraya yazdık:
-builder.Services.AddDbContext<AmlKycProject.Api.Data.AmlKycDbContext>(options =>
+// PostgreSQL veritabanı bağlantısı
+builder.Services.AddDbContext<AmlKycDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();

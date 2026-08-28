@@ -1,3 +1,5 @@
+namespace AmlKycProject.Api.Entities;
+
 public class Account
 {
     public int Id {get;set;}
