@@ -74,4 +74,54 @@ public class TransferController : ControllerBase
             
         return Ok(accounts);
     }
+
+    // --- AHMET'İ KARA LİSTEYE (SANCTION) EKLEME METODU ---
+    [HttpPost("add-sanction")]
+    public async Task<IActionResult> AddSanction([FromServices] AmlKycDbContext context)
+    {
+        if (context.Sanctions.Any(s => s.IdentityNumber == "11111111111"))
+            return Ok("Ahmet zaten kara listede!");
+
+        var sanction = new Sanction
+        {
+            FullName = "Ahmet Yılmaz",
+            IdentityNumber = "11111111111",
+            Country = "Türkiye"
+        };
+        
+        context.Sanctions.Add(sanction);
+        await context.SaveChangesAsync();
+        
+        return Ok("Uyarı: Ahmet kara listeye (Sanction) eklendi!");
+    }
+
+    // --- OLUŞAN ALARMLARI GÖRME METODU
+    [HttpGet("alerts")]
+    public IActionResult GetAlerts([FromServices] AmlKycDbContext context)
+    {
+        var alerts = context.Alerts
+            .Select(a => new 
+            { 
+                AlarmId = a.Id, 
+                Durum = a.Status, 
+                RiskSkoru = a.RiskLog.RiskScore,
+                TetiklenenKurallar = a.RiskLog.TriggeredRules
+            })
+            .ToList();
+            
+        return Ok(alerts);
+    }
+
+    // --- HESABA PARA EKLEME METODU (TEST İÇİN) ---
+    [HttpPost("add-money")]
+    public async Task<IActionResult> AddMoney([FromServices] AmlKycDbContext context, int accountId, decimal amount)
+    {
+        var account = await context.Accounts.FindAsync(accountId);
+        if (account == null) return NotFound("Hesap bulunamadı.");
+        
+        account.Balance += amount;
+        await context.SaveChangesAsync();
+        
+        return Ok($"İşlem başarılı. Hesap ID {accountId} için yeni bakiye: {account.Balance} TL");
+    }
 }

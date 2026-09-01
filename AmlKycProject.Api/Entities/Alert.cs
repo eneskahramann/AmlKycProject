@@ -7,6 +7,7 @@ public class Alert
     public Transfer Transfer {get;set;}
     public int RiskLogId {get;set;}
     public RiskLog RiskLog {get;set;}
+    public string Status { get; set; } = "Açık";
     public AnalystDecision Decision {get;set;} = AnalystDecision.Pending;
     public DateTime CreatedAt {get;set;} = DateTime.UtcNow;
     public DateTime? ResolvedAt{get;set;}

@@ -7,10 +7,12 @@ namespace AmlKycProject.Api.Services;
 public class TransferService : ITransferService
 {
     private readonly AmlKycDbContext _context;
+    private readonly IRiskService _riskService;
 
-    public TransferService(AmlKycDbContext context)
+    public TransferService(AmlKycDbContext context, IRiskService riskService) 
     {
         _context = context;
+        _riskService = riskService;
     }
 
     public async Task<(bool IsSuccess, string Message, Transfer? TransferRecord)> ExecuteTransferAsync(int senderAccountId, int receiverAccountId, decimal amount)
@@ -28,16 +30,16 @@ public class TransferService : ITransferService
         if (senderAccount.Balance < amount)
             return (false, "Yetersiz bakiye.", null);
 
-        // 2. ACID Transaction Başlatılıyor[cite: 1]
+        // 2. ACID Transaction Başlatılıyor
         using var transaction = await _context.Database.BeginTransactionAsync();
 
         try
         {
-            // Bakiyeleri güncelle[cite: 1]
+            // Bakiyeleri güncelle
             senderAccount.Balance -= amount;
             receiverAccount.Balance += amount;
 
-            // Transfer kaydını oluştur[cite: 1]
+            // Transfer kaydını oluştur
             var transfer = new Transfer
             {
                 SenderAccountId = senderAccountId,
@@ -51,15 +53,22 @@ public class TransferService : ITransferService
             
             // Değişiklikleri veritabanına kaydet
             await _context.SaveChangesAsync();
+
+            // TRANSFER BAŞARILI, RİSK MOTORUNU ÇALIŞTIR
+            await _riskService.EvaluateTransferRiskAsync(transfer);
             
-            // Transaction'ı onayla (Commit)[cite: 1]
+            // Transaction'ı onayla (Commit)
             await transaction.CommitAsync();
+
+            
+
+            
 
             return (true, "Transfer başarıyla gerçekleşti.", transfer);
         }
         catch (Exception ex)
         {
-            // Herhangi bir hata oluşması durumunda tüm işlemler geri alınır[cite: 1]
+            // Herhangi bir hata oluşması durumunda tüm işlemler geri alınır
             await transaction.RollbackAsync();
             return (false, $"Transfer sırasında hata oluştu: {ex.Message}", null);
         }

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using AmlKycProject.Api.Data; 
-using AmlKycProject.Api.Services;
+using AmlKycProject.Api.Data;
+using AmlKycProject.Api.Services; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +11,10 @@ builder.Services.AddSwaggerGen();
 // PostgreSQL veritabanı bağlantısı
 builder.Services.AddDbContext<AmlKycDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Servislerimizi sisteme (Dependency Injection) tanıtıyoruz
 builder.Services.AddScoped<ITransferService, TransferService>();
+builder.Services.AddScoped<IRiskService, RiskService>(); // <-- İŞTE SİSTEMİ AYAĞA KALDIRACAK O SATIR
 
 var app = builder.Build();
 
