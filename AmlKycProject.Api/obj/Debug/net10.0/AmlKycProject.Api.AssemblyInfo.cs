@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AmlKycProject.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ee964ef2ef277708ef2d204b04cf28808e3dc269")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c5fb6b3e18ee70f10455380a7e2a6e399fb1b2d9")]
 [assembly: System.Reflection.AssemblyProductAttribute("AmlKycProject.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AmlKycProject.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

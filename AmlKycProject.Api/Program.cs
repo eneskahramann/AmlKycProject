@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using AmlKycProject.Api.Data; 
+using AmlKycProject.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,7 @@ builder.Services.AddSwaggerGen();
 // PostgreSQL veritabanı bağlantısı
 builder.Services.AddDbContext<AmlKycDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<ITransferService, TransferService>();
 
 var app = builder.Build();
 
