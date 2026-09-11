@@ -1,10 +1,13 @@
-//HTML Arayüzü için Vue.js kullanarak bir para transferi formu oluşturuldu. Kullanıcıdan gönderici ve alıcı hesap ID'leri ile transfer edilecek tutar alınmakta. Form gönderildiğinde `makeTransfer` fonksiyonu çalıştırılıyor ve bu fonksiyon backend API'sine bir POST isteği gönderiyor. Başarılı veya başarısız işlemler için kullanıcıya mesaj gösteriliyor.
+<!-- HTML Arayüzü için Vue.js kullanarak bir para transferi formu oluşturuldu. Kullanıcıdan gönderici ve alıcı hesap ID'leri ile transfer edilecek tutar alınmakta. Form gönderildiğinde submitTransfer fonksiyonu çalıştırılıyor ve bu fonksiyon frontend servis katmanı üzerinden backend API'sine bir POST isteği gönderiyor. Başarılı veya başarısız işlemler için kullanıcıya mesaj gösteriliyor. -->
 <template>
   <div class="transfer-container">
     <h2>Para Transferi</h2>
-    <form @submit.prevent="makeTransfer">
+    <!-- Form gönderildiğinde sayfanın yenilenmesini (reload) engellemek için .prevent niteleyicisini (modifier) kullanıyoruz -->
+    <form @submit.prevent="submitTransfer">
+      
       <div class="form-group">
         <label>Gönderici Hesap ID:</label>
+        <!-- v-model ile input değerini reaktif değişkenimize (senderId) iki yönlü (two-way) bağlıyoruz -->
         <input type="number" v-model="senderId" required placeholder="Örn: 1" />
       </div>
       
@@ -21,6 +24,7 @@
       <button type="submit">Transferi Gerçekleştir</button>
     </form>
 
+    <!-- message değişkeni doluysa bu div görünür. isError durumuna göre dinamik CSS sınıfı (success veya error) atanır -->
     <div v-if="message" :class="{'error-msg': isError, 'success-msg': !isError}">
       {{ message }}
     </div>
@@ -29,44 +33,51 @@
 
 <script setup>
 import { ref } from 'vue'
-import axios from 'axios'
+// DİKKAT: Doğrudan axios kullanmak yerine Clean Architecture prensiplerine uygun olarak
+// API iletişimini ayrı bir servis katmanına (TransferService) devrettik.
+import TransferService from '../services/TransferService'
 
-// Form verilerini tutacağımız reaktif değişkenler
+// Form verilerini ve UI durumlarını tutacağımız reaktif (reaktif=değiştiğinde ekranı güncelleyen) değişkenler
 const senderId = ref('')
 const receiverId = ref('')
 const amount = ref('')
 const message = ref('')
 const isError = ref(false)
 
-// Transfer butonuna basıldığında çalışacak fonksiyon
-const makeTransfer = async () => {
+// Transfer butonuna basıldığında çalışacak ana fonksiyon
+const submitTransfer = async () => {
   try {
     message.value = 'İşlem yapılıyor...'
-    isError.value = false
+    isError.value = false // Yeni bir işleme başlarken hata durumunu sıfırlıyoruz
 
-    // Backend API'mize POST isteği atıyoruz
-    const response = await axios.post('http://localhost:5045/api/Transfer', {
+    // Backend iletişimi tamamen TransferService'e devredildi. 
+    // Vue sadece veriyi hazırlayıp gönderir ve sonucu bekler, URL veya HTTP metotlarını bilmez.
+    await TransferService.makeTransfer({
       senderAccountId: parseInt(senderId.value),
       receiverAccountId: parseInt(receiverId.value),
       amount: parseFloat(amount.value)
     })
 
+    // Promise (await) başarılı dönerse işlem gerçekleşmiş demektir
     message.value = "İşlem Başarılı! Arka planda risk motoru çalıştı."
     
-    // İşlem başarılıysa formu temizle
+    // İşlem başarılıysa form alanlarını bir sonraki işlem için temizliyoruz
     senderId.value = ''
     receiverId.value = ''
     amount.value = ''
 
   } 
-  // Eğer backend 400 Bad Request (örn: Yetersiz bakiye) dönerse buraya düşeriz
+  // Eğer backend 400 Bad Request (örn: Yetersiz bakiye) veya başka bir hata dönerse catch bloğuna düşeriz
   catch (error) {
-  
-    isError.value = true
-    // Backend'den gelen veri
+    isError.value = true // UI'da kırmızı hata kutusunu göstermek için tetikleyici
+    
+    // Backend'den fırlatılan yapılandırılmış JSON hata objesini yakalıyoruz
     const errData = error.response?.data
-    // Backend'den gelen yetersiz bakiye gibi mesajları ekrana basıyoruz
-    message.value = errData?.message || errData || "Bir hata oluştu."
+    
+    // Optional chaining (?.) kullanarak güvenli veri çekiyoruz. 
+    // Eğer backend'den özel bir 'message' alanı gelmişse (örn: "Yetersiz bakiye"), onu gösteriyoruz. 
+    // Gelmemişse varsayılan hatayı basıyoruz.
+    message.value = errData?.message || errData || "Bir hata oluştu. API ayakta mı?"
   }
 }
 </script>

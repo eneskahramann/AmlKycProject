@@ -35,7 +35,6 @@
                 </li>
               </ul>
             </td>
-            <!-- AKSİYON BUTONLARI BURADA DEĞİŞTİ -->
             <td>
               <div v-if="alert.status === 'Open' || alert.status === 'Açık'" class="action-buttons">
                 <button class="btn-approve" @click="updateStatus(alert.id, 'Approved')">✅ Temiz</button>
@@ -58,7 +57,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+// DİKKAT: Artık axios import etmiyoruz! Kendi yazdığımız servisi kullanıyoruz.
+import AlertService from '../services/AlertService'
 
 const alerts = ref([])
 const loading = ref(true)
@@ -66,7 +66,8 @@ const error = ref('')
 
 const fetchAlerts = async () => {
   try {
-    const response = await axios.get('http://localhost:5045/api/Transfer/alerts')
+    // API isteği artık AlertService üzerinden yapılıyor. Çok daha temiz!
+    const response = await AlertService.getAlerts()
     alerts.value = response.data
   } catch (err) {
     error.value = "Alarmlar çekilirken API'ye ulaşılamadı."
@@ -75,15 +76,11 @@ const fetchAlerts = async () => {
   }
 }
 
-// --- YENİ EKLENEN: DURUM GÜNCELLEME METODU ---
 const updateStatus = async (id, newStatus) => {
   try {
-    // 1. Backend'e durumu güncellemesi için istek atıyoruz
-    await axios.put(`http://localhost:5045/api/Transfer/alerts/${id}/status`, {
-      status: newStatus
-    })
+    // Güncelleme isteği de AlertService üzerinden yapılıyor.
+    await AlertService.updateStatus(id, newStatus)
     
-    // 2. Sayfayı yenilemeye gerek kalmadan, ekrandaki tablonun durumunu anında güncelliyoruz
     const alertIndex = alerts.value.findIndex(a => a.id === id)
     if (alertIndex !== -1) {
       alerts.value[alertIndex].status = newStatus
@@ -122,15 +119,12 @@ h2 { color: #d9534f; margin-bottom: 5px; }
 .badge.approved { background-color: #28a745; color: white; }
 .badge.suspicious { background-color: #dc3545; color: white; }
 .rules ul { margin: 0; padding-left: 20px; color: #495057; font-size: 0.9em; }
-
-/* YENİ BUTON TASARIMLARI */
 .action-buttons { display: flex; gap: 8px; }
 .btn-approve { padding: 8px 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s;}
 .btn-approve:hover { background-color: #218838; }
 .btn-reject { padding: 8px 12px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s;}
 .btn-reject:hover { background-color: #c82333; }
 .text-muted { color: #6c757d; font-style: italic; font-weight: bold; }
-
 .loading, .no-data { text-align: center; padding: 30px; font-size: 1.2em; color: #6c757d; }
 .error-msg { background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; }
 </style>
