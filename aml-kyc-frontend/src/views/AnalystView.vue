@@ -19,34 +19,38 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Hata Koruması: alert.riskScore kontrolü -->
           <tr v-for="alert in alerts" :key="alert.id" :class="{'high-risk-row': alert.riskScore >= 70}">
             <td>#{{ alert.id }}</td>
             <td>{{ new Date(alert.createdAt).toLocaleString('tr-TR') }}</td>
             <td class="score">{{ alert.riskScore }} / 100</td>
             <td>
-              <!-- Hata Koruması: status null gelirse çökme, 'Bilinmiyor' yaz -->
               <span class="badge" :class="alert.status ? alert.status.toLowerCase() : ''">
                 {{ alert.status || 'Bilinmiyor' }}
               </span>
             </td>
             <td class="rules">
               <ul>
-                <!-- Hata Koruması: riskLog null ise sistemi çökertmek yerine güvenli metot kullan (?. operatörü) -->
                 <li v-for="(rule, index) in parseRules(alert.riskLog?.triggeredRules)" :key="index">
                   {{ rule }}
                 </li>
               </ul>
             </td>
+            <!-- AKSİYON BUTONLARI BURADA DEĞİŞTİ -->
             <td>
-              <button class="btn-review" disabled>İncele</button>
+              <div v-if="alert.status === 'Open' || alert.status === 'Açık'" class="action-buttons">
+                <button class="btn-approve" @click="updateStatus(alert.id, 'Approved')">✅ Temiz</button>
+                <button class="btn-reject" @click="updateStatus(alert.id, 'Suspicious')">🚨 Şüpheli</button>
+              </div>
+              <div v-else class="text-muted">
+                İncelendi ({{ alert.status }})
+              </div>
             </td>
           </tr>
         </tbody>
       </table>
       
       <div v-if="alerts.length === 0" class="no-data">
-        Şu an bekleyen hiçbir şüpheli işlem yok.
+        Harika! Şu an bekleyen hiçbir şüpheli işlem yok.
       </div>
     </div>
   </div>
@@ -71,9 +75,26 @@ const fetchAlerts = async () => {
   }
 }
 
-// Güçlendirilmiş kural parçalayıcı: Eğer kural yoksa veya null ise sistemi çökertmez
+// --- YENİ EKLENEN: DURUM GÜNCELLEME METODU ---
+const updateStatus = async (id, newStatus) => {
+  try {
+    // 1. Backend'e durumu güncellemesi için istek atıyoruz
+    await axios.put(`http://localhost:5045/api/Transfer/alerts/${id}/status`, {
+      status: newStatus
+    })
+    
+    // 2. Sayfayı yenilemeye gerek kalmadan, ekrandaki tablonun durumunu anında güncelliyoruz
+    const alertIndex = alerts.value.findIndex(a => a.id === id)
+    if (alertIndex !== -1) {
+      alerts.value[alertIndex].status = newStatus
+    }
+  } catch (err) {
+    alert("Durum güncellenirken bir hata oluştu. Backend açık mı?")
+  }
+}
+
 const parseRules = (rulesString) => {
-  if (!rulesString) return ['Kural detayı backend\'den gelmedi (Include eksik)']
+  if (!rulesString) return ['Kural detayı bulunamadı']
   try {
     return JSON.parse(rulesString)
   } catch (e) {
@@ -87,7 +108,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* CSS kısımları aynı kalıyor */
 .dashboard-container { max-width: 1000px; margin: 40px auto; padding: 20px; font-family: Arial, sans-serif; }
 h2 { color: #d9534f; margin-bottom: 5px; }
 .subtitle { color: #6c757d; margin-bottom: 30px; }
@@ -99,8 +119,18 @@ h2 { color: #d9534f; margin-bottom: 5px; }
 .score { font-weight: bold; font-size: 1.1em; color: #dc3545; }
 .badge { padding: 6px 12px; border-radius: 20px; font-size: 0.85em; font-weight: bold; }
 .badge.açık, .badge.open { background-color: #ffc107; color: #000; }
+.badge.approved { background-color: #28a745; color: white; }
+.badge.suspicious { background-color: #dc3545; color: white; }
 .rules ul { margin: 0; padding-left: 20px; color: #495057; font-size: 0.9em; }
-.btn-review { padding: 8px 15px; background-color: #17a2b8; color: white; border: none; border-radius: 4px; cursor: not-allowed; opacity: 0.7;}
+
+/* YENİ BUTON TASARIMLARI */
+.action-buttons { display: flex; gap: 8px; }
+.btn-approve { padding: 8px 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s;}
+.btn-approve:hover { background-color: #218838; }
+.btn-reject { padding: 8px 12px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s;}
+.btn-reject:hover { background-color: #c82333; }
+.text-muted { color: #6c757d; font-style: italic; font-weight: bold; }
+
 .loading, .no-data { text-align: center; padding: 30px; font-size: 1.2em; color: #6c757d; }
 .error-msg { background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; }
 </style>

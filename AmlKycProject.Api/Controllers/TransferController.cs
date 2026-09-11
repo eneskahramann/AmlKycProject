@@ -109,6 +109,31 @@ public async Task<IActionResult> GetAlerts([FromServices] AmlKycDbContext contex
     return Ok(alerts);
 }
 
+// Analistin dışarıdan göndereceği durumu yakalayacağımız model
+public class UpdateAlertStatusDto
+{
+    public string Status { get; set; }
+}
+
+// Alarmın durumunu güncelleyecek olan uç nokta (Endpoint)
+[HttpPut("alerts/{id}/status")]
+public async Task<IActionResult> UpdateAlertStatus(int id, [FromBody] UpdateAlertStatusDto request, [FromServices] AmlKycDbContext context)
+{
+    // Veritabanından ilgili alarmı bul
+    var alert = await context.Alerts.FindAsync(id);
+    
+    if (alert == null) 
+        return NotFound(new { message = "Alarm bulunamadı." });
+
+    // Durumu güncelle ("Approved" veya "Suspicious" olarak)
+    alert.Status = request.Status;
+    
+    // Değişikliği PostgreSQL'e kaydet
+    await context.SaveChangesAsync();
+
+    return Ok(new { message = "Durum başarıyla güncellendi.", newStatus = alert.Status });
+}
+
     // --- HESABA PARA EKLEME METODU (TEST İÇİN) ---
     [HttpPost("add-money")]
     public async Task<IActionResult> AddMoney([FromServices] AmlKycDbContext context, int accountId, decimal amount)
