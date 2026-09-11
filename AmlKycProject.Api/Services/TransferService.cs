@@ -57,7 +57,7 @@ public class TransferService : ITransferService
             // TRANSFER BAŞARILI, RİSK MOTORUNU ÇALIŞTIR
             await _riskService.EvaluateTransferRiskAsync(transfer);
             
-            // Transaction'ı onayla (Commit)
+            // Transactionı onayla 
             await transaction.CommitAsync();
 
             

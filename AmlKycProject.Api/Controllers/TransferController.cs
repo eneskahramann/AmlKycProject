@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using AmlKycProject.Api.Services;
 using AmlKycProject.Api.DTOs;
 using AmlKycProject.Api.Data;
@@ -97,20 +98,16 @@ public class TransferController : ControllerBase
 
     // --- OLUŞAN ALARMLARI GÖRME METODU
     [HttpGet("alerts")]
-    public IActionResult GetAlerts([FromServices] AmlKycDbContext context)
-    {
-        var alerts = context.Alerts
-            .Select(a => new 
-            { 
-                AlarmId = a.Id, 
-                Durum = a.Status, 
-                RiskSkoru = a.RiskLog.RiskScore,
-                TetiklenenKurallar = a.RiskLog.TriggeredRules
-            })
-            .ToList();
-            
-        return Ok(alerts);
-    }
+public async Task<IActionResult> GetAlerts([FromServices] AmlKycDbContext context)
+{
+    // Artık _context yerine doğrudan parametre olarak aldığımız context'i kullanıyoruz
+    var alerts = await context.Alerts
+        .Include(a => a.RiskLog) 
+        .OrderByDescending(a => a.CreatedAt)
+        .ToListAsync();
+
+    return Ok(alerts);
+}
 
     // --- HESABA PARA EKLEME METODU (TEST İÇİN) ---
     [HttpPost("add-money")]

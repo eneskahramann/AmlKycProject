@@ -2662,7 +2662,8 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\KAHRAMAN\\.nuget\\packages\\": {}
+    "C:\\Users\\KAHRAMAN\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
@@ -2673,13 +2674,19 @@
       "packagesPath": "C:\\Users\\KAHRAMAN\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\KAHRAMAN\\Desktop\\Enes Kod\\Project\\AmlKycProject.Api\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\KAHRAMAN\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\KAHRAMAN\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
