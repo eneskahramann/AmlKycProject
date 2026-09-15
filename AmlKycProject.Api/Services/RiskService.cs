@@ -32,29 +32,30 @@ public class RiskService : IRiskService
             triggeredRules.Add("Yüksek Tutar (100.000 TL Üzeri)");
         }
 
-        // KURAL 2: Gece İşlemi (+20 Puan)[cite: 1]
-        // Örneğin akşam 22:00 ile sabah 06:00 arası gece kabul edilir. (UTC+3 Türkiye saati ayarlaması)
+        // KURAL 2: Gece İşlemi (+20 Puan)
+        // Örneğin akşam 22:00 ile sabah 06:00 arası gece kabul edilir.
         var currentHour = DateTime.UtcNow.AddHours(3).Hour; 
         if (currentHour >= 22 || currentHour < 6)
         {
             riskScore += 20;
-            triggeredRules.Add("Gece İşlemi");
+            triggeredRules.Add("Gece İşlemi (22:00 - 06:00)");
+            
         }
 
-        // KURAL 3: Yaptırım Listesi Eşleşmesi (+60 Puan)[cite: 1]
+        // KURAL 3: Yaptırım Listesi Eşleşmesi (+60 Puan)
         var isSenderSanctioned = await _context.Sanctions.AnyAsync(s => s.IdentityNumber == senderAccount.Customer.IdentityNumber);
         var isReceiverSanctioned = await _context.Sanctions.AnyAsync(s => s.IdentityNumber == receiverAccount.Customer.IdentityNumber);
 
         if (isSenderSanctioned || isReceiverSanctioned)
         {
             riskScore += 60;
-            triggeredRules.Add("Yaptırım (Sanction) Listesi Eşleşmesi");
+            triggeredRules.Add("Sanction Eşleşmesi");
         }
 
-        // Skor 100'ü geçmeyecek şekilde sabitlenir[cite: 1]
+        // Skor 100'ü geçmeyecek şekilde sabitlenir
         riskScore = Math.Min(100, riskScore);
 
-        // Esnek yapı (JSONB) için tetiklenen kuralları JSON string formatına çeviriyoruz[cite: 1]
+        // Esnek yapı (JSONB) için tetiklenen kuralları JSON string formatına çeviriyoruz
         string rulesJson = JsonSerializer.Serialize(triggeredRules);
 
         // 1. Adım: Her işlemin risk skorunu Risklog tablosuna kaydet
@@ -68,14 +69,15 @@ public class RiskService : IRiskService
 
         _context.RiskLogs.Add(riskLog);
 
-        // 2. Adım: Risk skoru 70 ve üzeriyse Alert (Alarm) tablosuna kayıt at[cite: 1]
-        if (riskScore >= 70)
+        // 2. Adım: Risk skoru 70 ve üzeriyse Alert (Alarm) tablosuna kayıt at
+        if (riskScore >= 70 || triggeredRules.Contains("Sanction Eşleşmesi")) // Yaptırım listesi eşleşmesi de alarm tetiklemeli
         {
             var alert = new Alert
             {
                 TransferId = transfer.Id,
-                RiskLog = riskLog,
-                Status = "Açık", // Vue.js tarafında Analist onayına düşecek[cite: 1]
+                RiskLog = riskLog,              
+                // Vue.js tarafında Analist onayına düşecek
+                Status = "Açık", 
                 CreatedAt = DateTime.UtcNow
             };
             _context.Alerts.Add(alert);

@@ -7,6 +7,7 @@ public class AmlKycDbContext : DbContext
 {
     public AmlKycDbContext(DbContextOptions<AmlKycDbContext> options) : base(options)
     {
+
     }
 
     public DbSet<Customer> Customers { get; set; }
@@ -24,3 +25,4 @@ public class AmlKycDbContext : DbContext
         modelBuilder.Entity<Transfer>().Property(t => t.Amount).HasColumnType("decimal(18,2)");
     }
 }
+

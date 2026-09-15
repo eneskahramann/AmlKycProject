@@ -12,6 +12,7 @@
           <tr>
             <th>Alarm ID</th>
             <th>Tarih</th>
+            <th>İşlem Detayları</th>
             <th>Risk Skoru</th>
             <th>Durum</th>
             <th>Tetiklenen Kurallar</th>
@@ -22,7 +23,17 @@
           <tr v-for="alert in alerts" :key="alert.id" :class="{'high-risk-row': alert.riskScore >= 70}">
             <td>#{{ alert.id }}</td>
             <td>{{ new Date(alert.createdAt).toLocaleString('tr-TR') }}</td>
-            <td class="score">{{ alert.riskScore }} / 100</td>
+            <td class ="transaction-detail">
+              <div v-if = "alert.transfer">
+                <span class="account-badge">Hesap: {{ alert.transfer.senderAccountId }}</span>
+                <span class="arrow"> ➡️ </span> 
+                <span class="account-badge">Hesap: {{ alert.transfer.receiverAccountId }}</span>
+                <span class="amount"> Tutar: {{ alert.transfer.amount?.toLocaleString('tr-TR') }} TL</span>
+              </div>
+              <div v-else class="text-muted">Transfer verisi bulunamadı.</div>               
+            </td>
+          
+            <td class="score">{{ alert.riskLog?.riskScore || alert.riskLog?.score }} / 100</td>
             <td>
               <span class="badge" :class="alert.status ? alert.status.toLowerCase() : ''">
                 {{ alert.status || 'Bilinmiyor' }}

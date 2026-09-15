@@ -33,18 +33,17 @@
 
 <script setup>
 import { ref } from 'vue'
-// DİKKAT: Doğrudan axios kullanmak yerine Clean Architecture prensiplerine uygun olarak
 // API iletişimini ayrı bir servis katmanına (TransferService) devrettik.
 import TransferService from '../services/TransferService'
 
-// Form verilerini ve UI durumlarını tutacağımız reaktif (reaktif=değiştiğinde ekranı güncelleyen) değişkenler
+// Form verilerini ve UI durumlarını tutacağımız reaktif (reaktif=değiştiğinde ekranı güncelleyen) değişkenler.
 const senderId = ref('')
 const receiverId = ref('')
 const amount = ref('')
 const message = ref('')
 const isError = ref(false)
 
-// Transfer butonuna basıldığında çalışacak ana fonksiyon
+// Transfer butonuna basıldığında çalışacak ana fonksiyon.
 const submitTransfer = async () => {
   try {
     message.value = 'İşlem yapılıyor...'

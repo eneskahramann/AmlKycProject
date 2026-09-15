@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "jRUAvb7YNZ8=",
+  "dgSpecHash": "bQB7AcnXEaI=",
   "success": true,
-  "projectFilePath": "C:\\Users\\KAHRAMAN\\Desktop\\Enes Kod\\Project\\AmlKycProject.Api\\AmlKycProject.Api.csproj",
+  "projectFilePath": "C:\\Users\\KAHRAMAN\\Desktop\\Enes Kod\\Project\\AmlKycProject.api\\AmlKycProject.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\KAHRAMAN\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\KAHRAMAN\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.11\\microsoft.aspnetcore.openapi.10.0.11.nupkg.sha512",

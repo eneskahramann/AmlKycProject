@@ -21,8 +21,15 @@ public class TransferService : ITransferService
         if (amount <= 0) return (false, "Transfer tutarı 0'dan büyük olmalıdır.", null);
         if (senderAccountId == receiverAccountId) return (false, "Gönderici ve alıcı hesap aynı olamaz.", null);
 
-        var senderAccount = await _context.Accounts.FindAsync(senderAccountId);
-        var receiverAccount = await _context.Accounts.FindAsync(receiverAccountId);
+        // Gönderici ve alıcı hesapları veritabanından çekiyoruz.
+        var senderAccount = await _context.Accounts
+    .Include(a => a.Customer)
+    .FirstOrDefaultAsync(a => a.Id == senderAccountId);
+
+        // Alıcı hesabı veritabanından çekiyoruz.
+    var receiverAccount = await _context.Accounts
+    .Include(a => a.Customer)
+    .FirstOrDefaultAsync(a => a.Id == receiverAccountId);
 
         if (senderAccount == null || receiverAccount == null)
             return (false, "Hesap bulunamadı.", null);

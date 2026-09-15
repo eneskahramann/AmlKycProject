@@ -5,7 +5,7 @@ public class Alert
     public int Id {get;set;}
     public int TransferId{get;set;}
     public Transfer Transfer {get;set;}
-    public int RiskLogId {get;set;}
+    public int RiskLogId {get;set;}   
     public RiskLog RiskLog {get;set;}
     public string Status { get; set; } = "Açık";
     public AnalystDecision Decision {get;set;} = AnalystDecision.Pending;

@@ -18,36 +18,51 @@ public class TransferController : ControllerBase
         _transferService = transferService;
     }
 
-    // --- TEST VERİSİ OLUŞTURMA METODU ---
-    [HttpPost("seed")]
-    public async Task<IActionResult> SeedData([FromServices] AmlKycDbContext context)
+    // --- TEST VERİSİ OLUŞTURMA METODU --- DATA SEED
+    // Bu metod, test amaçlı olarak veritabanına örnek müşteri ve hesap verilerini ekler. Analist ve kullanıcılar bu verilerle transfer işlemlerini test edebilir.
+    [HttpPost("add-customer")]
+public async Task<IActionResult> AddCustomer([FromBody] CreateCustomerRequestDto request, [FromServices] AmlKycDbContext context)
+{
+    // 1. Aynı kimlik numarasıyla daha önce kayıt olunmuş mu kontrol et
+    if (context.Customers.Any(c => c.IdentityNumber == request.IdentityNumber))
     {
-        if (context.Accounts.Any()) return Ok("Veritabanında zaten hesaplar var.");
-
-        // İki örnek müşteri oluşturuyoruz
-        var customer1 = new Customer { FirstName = "Ahmet", LastName = "Yılmaz", IdentityNumber = "11111111111" };
-        var customer2 = new Customer { FirstName = "Ayşe", LastName = "Kaya", IdentityNumber = "22222222222" };
-        
-        context.Customers.AddRange(customer1, customer2);
-        await context.SaveChangesAsync();
-
-        // Ahmet'in 100.000 TL'si var, Ayşe'nin hesabı boş
-        var account1 = new Account { CustomerId = customer1.Id, Balance = 100000m, Currency = "TRY" };
-        var account2 = new Account { CustomerId = customer2.Id, Balance = 0m, Currency = "TRY" };
-
-        context.Accounts.AddRange(account1, account2);
-        await context.SaveChangesAsync();
-
-        return Ok(new 
-        { 
-            Message = "Test verileri başarıyla oluşturuldu!", 
-            GondericiHesapId = account1.Id, 
-            AliciHesapId = account2.Id,
-            GondericiBakiye = account1.Balance
-        });
+        return BadRequest(new { Message = "Bu kimlik numarasına sahip bir müşteri zaten var!" });
     }
 
-    // --- ASIL TRANSFER METODU ---
+    // 2. Yeni Müşteriyi Oluştur
+    var newCustomer = new Customer 
+    { 
+        FirstName = request.FirstName, 
+        LastName = request.LastName, 
+        IdentityNumber = request.IdentityNumber 
+    };
+    
+    context.Customers.Add(newCustomer);
+    await context.SaveChangesAsync(); // Veritabanına kaydet ki ID'si oluşsun
+
+    // 3. Müşteriye Hesap Aç ve Bakiyesini Yükle
+    var newAccount = new Account 
+    { 
+        CustomerId = newCustomer.Id, 
+        Balance = request.InitialBalance, 
+        Currency = "TRY" 
+    };
+
+    context.Accounts.Add(newAccount);
+    await context.SaveChangesAsync(); // Hesabı da kaydet
+
+    // 4. Başarı Mesajı Dön
+    return Ok(new 
+    { 
+        Message = $"{newCustomer.FirstName} {newCustomer.LastName} sisteme başarıyla eklendi!", 
+        MusteriId = newCustomer.Id,
+        HesapId = newAccount.Id,
+        Bakiye = newAccount.Balance
+    });
+}
+
+    // --- TRANSFER METODU ---
+    // Bu metod, transfer işlemini başlatır ve risk değerlendirmesi yapar.
     [HttpPost]
     public async Task<IActionResult> MakeTransfer([FromBody] TransferRequestDto request)
     {
@@ -66,6 +81,7 @@ public class TransferController : ControllerBase
     }
 
     // --- VERİTABANINDAKİ HESAPLARI GÖRME METODU ---
+    // Bu metod, veritabanındaki tüm hesapları listeler. Hesap ID, bakiye ve müşteri ID'sini döndürür.
     [HttpGet("accounts")]
     public IActionResult GetAccounts([FromServices] AmlKycDbContext context)
     {
@@ -97,12 +113,14 @@ public class TransferController : ControllerBase
     }
 
     // --- OLUŞAN ALARMLARI GÖRME METODU
+    // Bu metod veritabanındaki tüm alarmları risk loglarıyla birlikte listeler.Analist bu alarmları inceleyebilir.
     [HttpGet("alerts")]
 public async Task<IActionResult> GetAlerts([FromServices] AmlKycDbContext context)
 {
-    // Artık _context yerine doğrudan parametre olarak aldığımız context'i kullanıyoruz
+    // Veritabanındaki tüm alarmları risk loglarıyla birlikte çekiyoruz.
     var alerts = await context.Alerts
-        .Include(a => a.RiskLog) 
+        .Include(a => a.RiskLog)// Risk log detayları 
+        .Include(a => a.Transfer) // Transfer detayları
         .OrderByDescending(a => a.CreatedAt)
         .ToListAsync();
 
@@ -115,7 +133,7 @@ public class UpdateAlertStatusDto
     public string Status { get; set; }
 }
 
-// Alarmın durumunu güncelleyecek olan uç nokta (Endpoint)
+// Alarmın durumunu güncelleme (Endpoint)
 [HttpPut("alerts/{id}/status")]
 public async Task<IActionResult> UpdateAlertStatus(int id, [FromBody] UpdateAlertStatusDto request, [FromServices] AmlKycDbContext context)
 {
@@ -146,4 +164,11 @@ public async Task<IActionResult> UpdateAlertStatus(int id, [FromBody] UpdateAler
         
         return Ok($"İşlem başarılı. Hesap ID {accountId} için yeni bakiye: {account.Balance} TL");
     }
+}
+public class CreateCustomerRequestDto
+{
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string IdentityNumber { get; set; }
+    public decimal InitialBalance { get; set; }
 }
