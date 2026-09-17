@@ -1,4 +1,4 @@
-# 🛡️ SentinelAML - Anti-Money Laundering & Risk Engine
+# 🛡️ Anti-Money Laundering & Risk Engine
 
 Şüpheli finansal işlemleri tespit etmek, engellemek ve raporlamak amacıyla geliştirilmiş **.NET Core** ve **Vue.js** tabanlı bir Kara Para Aklama Önleme (AML - Anti-Money Laundering) ve İşlem İzleme (Transaction Monitoring) sistemidir.
 
