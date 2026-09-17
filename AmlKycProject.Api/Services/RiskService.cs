@@ -18,8 +18,6 @@ public class RiskService : IRiskService
     {
         int riskScore = 0;
         var triggeredRules = new List<string>();
-        
-        
 
         // İşlemi yapan gönderici ve alıcının müşteri bilgilerini (TC Kimlik vb.) veritabanından çekiyoruz
         var senderAccount = await _context.Accounts.Include(a => a.Customer).FirstOrDefaultAsync(a => a.Id == transfer.SenderAccountId);
@@ -27,7 +25,7 @@ public class RiskService : IRiskService
 
         if (senderAccount == null || receiverAccount == null) return;
 
-        // Gönderici ve alıcı hesaplarının yaşını hesaplıyoruz (hesap açılış tarihinden bugüne kadar geçen gün sayısı)
+        // Gönderici ve alıcı hesaplarının yaşını hesaplıyoruz
         var senderYasi = (DateTime.UtcNow - senderAccount.CreatedAt).TotalDays;
         var receiverYasi = (DateTime.UtcNow - receiverAccount.CreatedAt).TotalDays;
 
@@ -39,53 +37,49 @@ public class RiskService : IRiskService
         }
 
         // KURAL 2: Gece İşlemi (+20 Puan)
-        // Örneğin akşam 22:00 ile sabah 06:00 arası gece kabul edilir.
         var currentHour = DateTime.UtcNow.AddHours(3).Hour; 
         if (currentHour >= 22 || currentHour < 6)
         {
             riskScore += 20;
             triggeredRules.Add("Gece İşlemi (22:00 - 06:00)");
-            
         }
 
-        // KURAL 3: Yaptırım Listesi Eşleşmesi (+60 Puan)
-        var isSenderSanctioned = await _context.Sanctions.AnyAsync(s => s.IdentityNumber == senderAccount.Customer.IdentityNumber);
-        var isReceiverSanctioned = await _context.Sanctions.AnyAsync(s => s.IdentityNumber == receiverAccount.Customer.IdentityNumber);
-
-        // KURAL 4: Çifte Yeni Hesap Şüphesi (+40 Puan)
-        if (senderYasi <= 3 || receiverYasi <=3 && transfer.Amount >= 20000)
+        // KURAL 4: Çifte Yeni Hesap Şüphesi (+30 Puan)
+        if ((senderYasi <= 3 || receiverYasi <= 3) && transfer.Amount >= 20000)
         {
             riskScore += 30;
             triggeredRules.Add("Çifte Yeni Hesap: Yeni açılan iki hesap arasında şüpheli transfer.");
         }
         
-        // KURAL 5: Sınır Altı İşlem Şüphesi (+25 Puan)
-        if (transfer.Amount >=95000 && transfer.Amount < 100000)
+        // KURAL 5: Sınır Altı İşlem Şüphesi (+10 Puan)
+        if (transfer.Amount >= 95000 && transfer.Amount < 100000)
         {
             riskScore += 10;
-            triggeredRules.Add(" Sınır Altı İşlem Şüphesi (95.000 TL - 100.000 TL)");
+            triggeredRules.Add("Sınır Altı İşlem Şüphesi (95.000 TL - 100.000 TL)");
         }
 
         // KURAL 6: Doğal Olmayan Küsuratsız İşlem (+10 Puan)
-        // Örneğin 50.000 TL ve üzeri ve küsuratı olmayan işlem
         if (transfer.Amount >= 50000 && transfer.Amount % 1000 == 0)
         {
             riskScore += 10;
             triggeredRules.Add("Doğal olmayan küsuratsız işlem");
         }
 
-        // Kural 7: Uyuyan hesap hareketi
-        var lastTransfer = await _context.Transfers.Where(t=> t.SenderAccountId == senderAccount.Id && t.IsSuccesful == true).OrderByDescending(t=> t.TransferDate).FirstOrDefaultAsync();
+        // KURAL 7: Uyuyan Hesap Hareketi (+30 Puan)
+        var lastTransfer = await _context.Transfers
+            .Where(t => t.SenderAccountId == senderAccount.Id && t.IsSuccessful == true)
+            .OrderByDescending(t => t.TransferDate)
+            .FirstOrDefaultAsync();
 
-        if(lastTransfer != null){
-            
-            var daySinceLastTransfer = (DateTime.UtcNow - lastTransfer.TransferDate).TotalDays;
+        if (lastTransfer != null)
+        {
+            var daysSinceLastTransfer = (DateTime.UtcNow - lastTransfer.TransferDate).TotalDays;
 
-            if(daysSinceLastTransfer > 90 && transfer.Amount > 75000){
-                riskScore += 30;
-                triggeredRules.Add("Uyuyan Hesap: Uzun süre pasif olan hesaptan yüklü çıkış.")
+            if (daysSinceLastTransfer > 90 && transfer.Amount > 75000)
+            {
+                riskScore += 20;
+                triggeredRules.Add("Uyuyan Hesap: Uzun süre pasif olan hesaptan yüklü çıkış.");
             }
-
         }
 
         // Skor 100'ü geçmeyecek şekilde sabitlenir
@@ -106,20 +100,17 @@ public class RiskService : IRiskService
         _context.RiskLogs.Add(riskLog);
 
         // 2. Adım: Risk skoru 70 ve üzeriyse Alert (Alarm) tablosuna kayıt at
-        if (riskScore >= 70 || triggeredRules.Contains("Sanction Eşleşmesi")) // Yaptırım listesi eşleşmesi de alarm tetiklemeli
+        if (riskScore >= 60) 
         {
             var alert = new Alert
             {
                 TransferId = transfer.Id,
                 RiskLog = riskLog,              
-                // Vue.js tarafında Analist onayına düşecek
                 Status = "Açık", 
                 CreatedAt = DateTime.UtcNow
             };
             _context.Alerts.Add(alert);
         }
-
-        
 
         await _context.SaveChangesAsync();
     }
