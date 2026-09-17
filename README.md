@@ -37,11 +37,12 @@ Sistem şu anda aşağıdaki şüpheli işlem örüntülerini (pattern) tespit e
   "DefaultConnection": "Host=localhost;Port=5432;Database=AmlKycDb;Username=postgres;Password=sifreniz"
 }
 
+## 2. Backend'i Ayağa Kaldırma
 Bash
-
 dotnet ef database update
 dotnet run
 
+## 3. Frontend'i Ayağa Kaldırma
 Bash
 npm install
 npm run dev
