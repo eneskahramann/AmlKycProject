@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using AmlKycProject.Api.Data;
 using AmlKycProject.Api.Entities;
+using System.Text.Json;
 
 namespace AmlKycProject.Api.Services;
 
@@ -22,17 +23,58 @@ public class TransferService : ITransferService
         if (senderAccountId == receiverAccountId) return (false, "Gönderici ve alıcı hesap aynı olamaz.", null);
 
         // Gönderici ve alıcı hesapları veritabanından çekiyoruz.
-        var senderAccount = await _context.Accounts
-    .Include(a => a.Customer)
-    .FirstOrDefaultAsync(a => a.Id == senderAccountId);
+        var senderAccount = await _context.Accounts.Include(a => a.Customer).FirstOrDefaultAsync(a => a.Id == senderAccountId);
 
         // Alıcı hesabı veritabanından çekiyoruz.
-    var receiverAccount = await _context.Accounts
-    .Include(a => a.Customer)
-    .FirstOrDefaultAsync(a => a.Id == receiverAccountId);
+        var receiverAccount = await _context.Accounts.Include(a => a.Customer).FirstOrDefaultAsync(a => a.Id == receiverAccountId);
 
         if (senderAccount == null || receiverAccount == null)
             return (false, "Hesap bulunamadı.", null);
+
+        var isSenderSanctioned = await _context.Sanctions.AnyAsync(s => s.IdentityNumber == senderAccount.Customer.IdentityNumber);
+        var isReceiverSanctioned = await _context.Sanctions.AnyAsync(s => s.IdentityNumber == receiverAccount.Customer.IdentityNumber);
+    
+    if (isSenderSanctioned || isReceiverSanctioned){
+            var blockedTransfer = new Transfer
+            {
+                SenderAccountId = senderAccountId,
+                ReceiverAccountId = receiverAccountId,
+                Amount = amount,
+                IsSuccessful = false, // Transfer başaşrısız
+                TransferDate = DateTime.UtcNow
+            };
+
+            _context.Transfers.Add(blockedTransfer);
+            await _context.SaveChangesAsync();// id oluşmaması için kaydetme işlemi burada yapılır
+
+            
+            var ruleList = new List<string>{"Sanction Eşleşmesi - İşlem Bloke Edildi"};
+
+            var riskLog = new RiskLog
+            {
+                TransferId = blockedTransfer.Id,
+                RiskScore = 100, // Maksimum risk skoru
+                // C#'ın bu listeyi bir JSON formatına çevirmesini sağlıyoruz
+                TriggeredRules = JsonSerializer.Serialize(ruleList),
+                CreatedAt = DateTime.UtcNow
+            };
+            _context.RiskLogs.Add(riskLog);
+
+            var alert = new Alert
+            {
+                TransferId = blockedTransfer.Id,
+                RiskLog = riskLog,
+                Status = "Bloke Edildi", // Vue.js tarafında Analist onayına düşecek
+                CreatedAt = DateTime.UtcNow
+            };
+            _context.Alerts.Add(alert);
+
+            await _context.SaveChangesAsync();
+
+            return (false, "İşlem Yaptırım politikaları gereği BLOKE EDİLMİŞTİR", null);
+        }
+
+
 
         if (senderAccount.Balance < amount)
             return (false, "Yetersiz bakiye.", null);

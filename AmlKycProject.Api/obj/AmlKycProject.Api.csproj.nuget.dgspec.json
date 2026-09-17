@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\KAHRAMAN\\Desktop\\Enes Kod\\Project\\AmlKycProject.api\\AmlKycProject.Api.csproj": {}
+    "C:\\Users\\KAHRAMAN\\Desktop\\Enes Kod\\Project\\AmlKycProject.Api\\AmlKycProject.Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\KAHRAMAN\\Desktop\\Enes Kod\\Project\\AmlKycProject.api\\AmlKycProject.Api.csproj": {
+    "C:\\Users\\KAHRAMAN\\Desktop\\Enes Kod\\Project\\AmlKycProject.Api\\AmlKycProject.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\KAHRAMAN\\Desktop\\Enes Kod\\Project\\AmlKycProject.api\\AmlKycProject.Api.csproj",
+        "projectUniqueName": "C:\\Users\\KAHRAMAN\\Desktop\\Enes Kod\\Project\\AmlKycProject.Api\\AmlKycProject.Api.csproj",
         "projectName": "AmlKycProject.Api",
-        "projectPath": "C:\\Users\\KAHRAMAN\\Desktop\\Enes Kod\\Project\\AmlKycProject.api\\AmlKycProject.Api.csproj",
+        "projectPath": "C:\\Users\\KAHRAMAN\\Desktop\\Enes Kod\\Project\\AmlKycProject.Api\\AmlKycProject.Api.csproj",
         "packagesPath": "C:\\Users\\KAHRAMAN\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\KAHRAMAN\\Desktop\\Enes Kod\\Project\\AmlKycProject.api\\obj\\",
+        "outputPath": "C:\\Users\\KAHRAMAN\\Desktop\\Enes Kod\\Project\\AmlKycProject.Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-container">
-    <h2>🚨 Analist Kontrol Paneli</h2>
+    <h2>🚨 Analist Kontrol Paneli </h2>
     <p class="subtitle">Sistem tarafından tespit edilen şüpheli işlemler aşağıda listelenmektedir.</p>
     
     <div v-if="loading" class="loading">Alarmlar yükleniyor...</div>
@@ -68,16 +68,15 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-// DİKKAT: Artık axios import etmiyoruz! Kendi yazdığımız servisi kullanıyoruz.
 import AlertService from '../services/AlertService'
 
 const alerts = ref([])
 const loading = ref(true)
 const error = ref('')
-
+// API'den alarmları çekmek için kullanılan fonksiyon
 const fetchAlerts = async () => {
   try {
-    // API isteği artık AlertService üzerinden yapılıyor. Çok daha temiz!
+    
     const response = await AlertService.getAlerts()
     alerts.value = response.data
   } catch (err) {
@@ -86,7 +85,7 @@ const fetchAlerts = async () => {
     loading.value = false
   }
 }
-
+// Alarm durumunu güncellemek için kullanılan fonksiyon
 const updateStatus = async (id, newStatus) => {
   try {
     // Güncelleme isteği de AlertService üzerinden yapılıyor.
@@ -100,7 +99,7 @@ const updateStatus = async (id, newStatus) => {
     alert("Durum güncellenirken bir hata oluştu. Backend açık mı?")
   }
 }
-
+// riskLog içindeki triggeredRules alanı JSON string olarak geliyor. Bunu parse edip listeye çevirmek için kullanılan fonksiyon
 const parseRules = (rulesString) => {
   if (!rulesString) return ['Kural detayı bulunamadı']
   try {

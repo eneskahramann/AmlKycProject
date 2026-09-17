@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using AmlKycProject.Api.Entities;
 
 namespace AmlKycProject.Api.Data;
-
+// DbContext sınıfı, Entity Framework Core'un veritabanı ile etkileşim kurmasını sağlar. Bu sınıf, veritabanındaki tabloları temsil eden DbSet özelliklerini içerir.
 public class AmlKycDbContext : DbContext
 {
     public AmlKycDbContext(DbContextOptions<AmlKycDbContext> options) : base(options)
@@ -16,7 +16,7 @@ public class AmlKycDbContext : DbContext
     public DbSet<Sanction> Sanctions { get; set; }
     public DbSet<RiskLog> RiskLogs { get; set; }
     public DbSet<Alert> Alerts { get; set; }
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
