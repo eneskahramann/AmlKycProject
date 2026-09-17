@@ -36,3 +36,12 @@ Sistem şu anda aşağıdaki şüpheli işlem örüntülerini (pattern) tespit e
 "ConnectionStrings": {
   "DefaultConnection": "Host=localhost;Port=5432;Database=AmlKycDb;Username=postgres;Password=sifreniz"
 }
+
+Bash
+
+dotnet ef database update
+dotnet run
+
+Bash
+npm install
+npm run dev
