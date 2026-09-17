@@ -23,10 +23,12 @@ Proje, kurumsal bankacılık standartlarında geliştirilmiş olup, ACID prensip
 
 Sistem şu anda aşağıdaki şüpheli işlem örüntülerini (pattern) tespit edebilmektedir:
 1.  **Sanction Match (Yaptırım Eşleşmesi):** Anında bloke ve Kırmızı Alarm.
-2.  **Structuring (Sınır Altı İşlem):** Yasal bildirim sınırının hemen altındaki (Örn: 95.000 - 99.999 TL) şüpheli tutarlar.
-3.  **Ping-Pong (U-Dönüşü):** Kısa süre içinde karşılıklı gerçekleşen anlamsız para transferleri.
-4.  **Dormant Account (Uyuyan Hesap):** Uzun süre inaktif olan hesaplardan aniden çıkan yüklü miktarlar.
-5.  **New-to-New (Çifte Taze Hesap):** Yeni açılmış hesaplar arasındaki yüksek hacimli trafik.
+2.  **Yüksek Tutar:** Yapılan işlemin hacminin çok yüksek olması.
+3.  **Sınır Altı İşlem:** Yasal bildirim sınırının hemen altındaki (Örn: 95.000 - 99.999 TL) şüpheli tutarlar.
+4.  **Gece İşlemi(22:00 - 06:00):** Gece belli saatlerde yapılan işlemler.
+5.  **Dormant Account (Uyuyan Hesap):** Uzun süre inaktif olan hesaplardan aniden çıkan yüklü miktarlar.
+6.  **New-to-New (Çifte Taze Hesap):** Yeni açılmış hesaplar arasındaki yüksek hacimli trafik.
+7.  **Doğal Olmayan Küsuratsız İşlem:** Yasadışı bahis veya haraç ödemeleri çoğunlukla pürüzsüz, tam binlik katlar şeklinde yapılır.
 
 ## ⚙️ Kurulum ve Çalıştırma
 
