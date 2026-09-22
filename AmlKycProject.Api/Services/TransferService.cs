@@ -9,7 +9,7 @@ public class TransferService : ITransferService
 {
     private readonly AmlKycDbContext _context;
     private readonly IRiskService _riskService;
-
+     
     public TransferService(AmlKycDbContext context, IRiskService riskService) 
     {
         _context = context;

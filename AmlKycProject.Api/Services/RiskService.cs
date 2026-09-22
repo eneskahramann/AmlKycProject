@@ -61,7 +61,7 @@ public class RiskService : IRiskService
         // KURAL 6: Doğal Olmayan Küsuratsız İşlem (+10 Puan)
         if (transfer.Amount >= 50000 && transfer.Amount % 1000 == 0)
         {
-            riskScore += 10;
+            riskScore += 5;
             triggeredRules.Add("Doğal olmayan küsuratsız işlem");
         }
 
@@ -99,7 +99,7 @@ public class RiskService : IRiskService
 
         _context.RiskLogs.Add(riskLog);
 
-        // 2. Adım: Risk skoru 70 ve üzeriyse Alert (Alarm) tablosuna kayıt at
+        // 2. Adım: Risk skoru 60 ve üzeriyse Alert (Alarm) tablosuna kayıt at
         if (riskScore >= 60) 
         {
             var alert = new Alert
