@@ -210,7 +210,11 @@ h2 {
 }
 
 /* YAZI VE BADGE (ETİKET) DETAYLARI */
-.score { font-weight: 800; font-size: 1.1em; color: #e41313 !important; }
+.score { 
+  font-weight: 800; 
+  font-size: 1.1em; 
+  color: #e41313 !important; 
+}
 .badge { 
   padding: 6px 12px; 
   border-radius: 20px; 
@@ -218,14 +222,33 @@ h2 {
   font-weight: bold; 
   text-transform: capitalize;
 }
-.badge.açık, .badge.open { background-color: #fef08a; color: #854d0e; }
-.badge.approved { background-color: #dcfce7; color: #166534; }
-.badge.suspicious { background-color: #fee2e2; color: #991b1b; }
+.badge.açık, .badge.open { 
+  background-color: #fef08a;
+   color: #854d0e; 
+}
+.badge.approved { 
+background-color: #dcfce7; 
+color: #166534; 
+}
+.badge.suspicious { 
+  background-color: #fee2e2; 
+  color: #991b1b; 
+}
 
-.rules ul { margin: 0; padding-left: 20px; color: #4b668b; font-size: 0.9em; line-height: 1.5; }
+.rules ul { 
+  margin: 0; 
+  padding-left: 20px; 
+  color: #4b668b; 
+  font-size: 0.9em; 
+  line-height: 1.5; 
+}
 
 /* BUTONLAR */
-.action-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+.action-buttons { 
+  display: flex; 
+  gap: 10px; 
+  flex-wrap: wrap; 
+}
 .btn-approve, .btn-reject {
   padding: 10px 16px; 
   color: white; 
@@ -240,16 +263,44 @@ h2 {
   text-align: center;
 }
 
-.btn-approve { background-color: #10b981; }
-.btn-approve:hover { background-color: #059669; transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.15); }
+.btn-approve { 
+  background-color: #10b981; 
+}
+.btn-approve:hover { 
+  background-color: #059669; 
+  transform: translateY(-1px); 
+  box-shadow: 0 4px 6px rgba(0,0,0,0.15); 
+}
 
-.btn-reject { background-color: #ef4444; }
-.btn-reject:hover { background-color: #dc2626; transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.15); }
+.btn-reject { 
+  background-color: #ef4444; 
+}
+.btn-reject:hover { 
+  background-color: #dc2626; 
+  transform: translateY(-1px); 
+  box-shadow: 0 4px 6px rgba(0,0,0,0.15); 
+}
 
 /* YARDIMCI SINIFLAR */
-.text-muted { color: #94a3b8; font-style: italic; font-size: 0.9em; }
-.loading, .no-data { text-align: center; padding: 40px; font-size: 1.1em; color: #64748b; }
-.error-msg { background-color: #fee2e2; color: #991b1b; padding: 15px; border-radius: 8px; font-weight: 500; border-left: 4px solid #ef4444; }
+.text-muted { 
+  color: #94a3b8; 
+  font-style: italic; 
+  font-size: 0.9em; 
+}
+.loading, .no-data { 
+  text-align: center; 
+  padding: 40px; 
+  font-size: 1.1em; 
+  color: #64748b; 
+}
+.error-msg { 
+  background-color: #fee2e2; 
+  color: #991b1b; 
+  padding: 15px; 
+  border-radius: 8px; 
+  font-weight: 500; 
+  border-left: 4px solid #ef4444; 
+}
 
 /* === İŞLEM DETAYLARI (DİKEY TASARIM) === */
 .vertical-transaction {

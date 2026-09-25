@@ -82,7 +82,9 @@ const submitTransfer = async () => {
 </script>
 
 <style scoped>
-.transfer-container {
+
+.transfer-container 
+{
   max-width: 450px;
   margin: 40px auto;
   padding: 30px;
@@ -91,12 +93,65 @@ const submitTransfer = async () => {
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   font-family: Arial, sans-serif;
 }
-h2 { text-align: center; color: #333; margin-bottom: 20px; }
-.form-group { margin-bottom: 15px; }
-label { display: block; font-weight: bold; margin-bottom: 5px; color: #555; }
-input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-button { width: 100%; padding: 12px; background-color: #007bff; color: white; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; transition: 0.3s; }
-button:hover { background-color: #0056b3; }
-.success-msg { margin-top: 15px; padding: 10px; background-color: #d4edda; color: #155724; border-radius: 5px; text-align: center; }
-.error-msg { margin-top: 15px; padding: 10px; background-color: #f8d7da; color: #721c24; border-radius: 5px; text-align: center; }
+h2 
+{ 
+  text-align: center; 
+  color: #333; 
+  margin-bottom: 20px;
+}
+
+.form-group 
+{ 
+  margin-bottom: 15px; 
+}
+label 
+{ 
+  display: block; 
+  font-weight: bold; 
+  margin-bottom: 5px; 
+  color: #555; 
+}
+input 
+{ 
+  width: 100%; 
+  padding: 10px; 
+  border: 1px solid #ccc; 
+  border-radius: 5px; 
+  box-sizing: border-box;
+}
+button 
+{
+  width: 100%; 
+  padding: 12px; 
+  background-color: #007bff; 
+  color: white; 
+  font-weight: bold; 
+  border: none; 
+  border-radius: 5px; 
+  cursor: pointer; 
+  transition: 0.3s;
+}
+button:hover 
+{ 
+  background-color: #0056b3; 
+}
+.success-msg 
+{
+  margin-top: 15px; 
+  padding: 10px; 
+  background-color: #d4edda; 
+  color: #155724; 
+  border-radius: 5px; 
+  text-align: center;
+}
+.error-msg 
+{
+  margin-top: 15px; 
+  padding: 10px; 
+  background-color: #f8d7da; 
+  color: #721c24; 
+  border-radius: 5px; 
+  text-align: center;
+}
+
 </style>

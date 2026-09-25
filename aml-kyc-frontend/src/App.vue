@@ -16,9 +16,38 @@ import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <style>
-body { margin: 0; padding: 0; background-color: #e9ecef; }
-.navbar { background-color: #343a40; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; font-family: Arial, sans-serif; }
-.navbar h1 { margin: 0; font-size: 24px; color: #ffc107; }
-.navbar nav a { color: white; text-decoration: none; margin-left: 20px; font-weight: bold; }
-.navbar nav a:hover { color: #ffc107; }
+
+body 
+{ 
+  margin: 0; 
+  padding: 0; 
+  background-color: #d9dee2; 
+}
+.navbar 
+{ 
+  background-color: #343a40; 
+  padding: 15px 30px; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  color: white; 
+  font-family: Arial, sans-serif; 
+}
+.navbar h1 
+{ 
+  margin: 0; 
+  font-size: 24px; 
+  color: #ff6600; 
+}
+.navbar nav a 
+{ 
+  color: white; 
+  text-decoration: none;
+  margin-left: 20px; 
+  font-weight: bold; 
+}
+.navbar nav a:hover 
+{ 
+  color: #ff7300; 
+}
 </style>

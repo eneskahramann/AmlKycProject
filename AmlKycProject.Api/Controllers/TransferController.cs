@@ -59,9 +59,12 @@ public class TransferController : ControllerBase
     }
 
     // --- TRANSFER METODU ---
-    [HttpPost]
-    public async Task<IActionResult> MakeTransfer([FromBody] TransferRequestDto request)
+    [HttpPost] // Vue.js'den gelen POST isteğini yakalıyoruz.
+    public async Task<IActionResult> MakeTransfer([FromBody] TransferRequestDto request)// Vue.js'in gönderdiği JSON verisi (Gönderen, Alıcı, Tutar) 'request' nesnesine gelir.
     {
+
+        // Bu gelen veriyi alıp ve asıl işi yapması için TransferService'e yolluyoruz.
+        
         var result = await _transferService.ExecuteTransferAsync(
             request.SenderAccountId, 
             request.ReceiverAccountId, 
@@ -168,15 +171,5 @@ public class TransferController : ControllerBase
     }
 }
 
-public class UpdateAlertStatusDto
-{
-    public string Status { get; set; }
-}
 
-public class CreateCustomerRequestDto
-{
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string IdentityNumber { get; set; }
-    public decimal InitialBalance { get; set; }
-}
+

@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\KAHRAMAN\\Desktop\\Enes Kod\\Project\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{CC4597A2-F131-C508-1B5C-BE3908BA36F9}|AmlKycProject.Api\\AmlKycProject.Api.csproj|c:\\users\\kahraman\\desktop\\enes kod\\project\\amlkycproject.api\\amlkycproject.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{CC4597A2-F131-C508-1B5C-BE3908BA36F9}|AmlKycProject.Api\\AmlKycProject.Api.csproj|solutionrelative:amlkycproject.api\\amlkycproject.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AmlKycProject.Api",
+              "DocumentMoniker": "C:\\Users\\KAHRAMAN\\Desktop\\Enes Kod\\Project\\AmlKycProject.Api\\AmlKycProject.Api.csproj",
+              "RelativeDocumentMoniker": "AmlKycProject.Api\\AmlKycProject.Api.csproj",
+              "ToolTip": "C:\\Users\\KAHRAMAN\\Desktop\\Enes Kod\\Project\\AmlKycProject.Api\\AmlKycProject.Api.csproj",
+              "RelativeToolTip": "AmlKycProject.Api\\AmlKycProject.Api.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-09-24T10:37:35.697Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
