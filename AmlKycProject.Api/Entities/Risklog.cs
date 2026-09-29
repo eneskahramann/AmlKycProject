@@ -11,6 +11,6 @@ public class RiskLog
 
     [Column(TypeName = "jsonb")]
     public string TriggeredRules { get; set; }
-
     public DateTime CreatedAt {get;set;} = DateTime.UtcNow;
+    
 }
