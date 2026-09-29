@@ -20,9 +20,10 @@ public class TransferService : ITransferService
     {
         // 1. Temel Kontroller
         if (amount <= 0) return (false, "Transfer tutarı 0'dan büyük olmalıdır.", null);
+        
         if (senderAccountId == receiverAccountId) return (false, "Gönderici ve alıcı hesap aynı olamaz.", null);
 
-        // Gönderici ve alıcı hesapları veritabanından çekiyoruz.
+        // Gönderici hesabı veritabanından çekiyoruz.
         var senderAccount = await _context.Accounts.Include(a => a.Customer).FirstOrDefaultAsync(a => a.Id == senderAccountId);
 
         // Alıcı hesabı veritabanından çekiyoruz.
@@ -32,6 +33,7 @@ public class TransferService : ITransferService
             return (false, "Hesap bulunamadı.", null);
 
         var isSenderSanctioned = await _context.Sanctions.AnyAsync(s => s.IdentityNumber == senderAccount.Customer.IdentityNumber);
+        
         var isReceiverSanctioned = await _context.Sanctions.AnyAsync(s => s.IdentityNumber == receiverAccount.Customer.IdentityNumber);
     
     if (isSenderSanctioned || isReceiverSanctioned){
@@ -112,7 +114,7 @@ public class TransferService : ITransferService
             
 
             
-
+        
             return (true, "Transfer başarıyla gerçekleşti.", transfer);
         }
         catch (Exception ex)

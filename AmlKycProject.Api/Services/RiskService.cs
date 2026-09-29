@@ -29,14 +29,14 @@ public class RiskService : IRiskService
         var senderYasi = (DateTime.UtcNow - senderAccount.CreatedAt).TotalDays;
         var receiverYasi = (DateTime.UtcNow - receiverAccount.CreatedAt).TotalDays;
 
-        // KURAL 1: 100.000 TL üzeri transfer (+40 Puan)
+        // KURAL 1: 100.000 TL üzeri transfer 
         if (transfer.Amount > 100000)
         {
             riskScore += 40;
             triggeredRules.Add("Yüksek Tutar (100.000 TL Üzeri)");
         }
 
-        // KURAL 2: Gece İşlemi (+20 Puan)
+        // KURAL 2: Gece İşlemi 
         var currentHour = DateTime.UtcNow.AddHours(3).Hour; 
         if (currentHour >= 22 || currentHour < 6)
         {
@@ -44,28 +44,28 @@ public class RiskService : IRiskService
             triggeredRules.Add("Gece İşlemi (22:00 - 06:00)");
         }
 
-        // KURAL 4: Çifte Yeni Hesap Şüphesi (+30 Puan)
-        if ((senderYasi <= 3 || receiverYasi <= 3) && transfer.Amount >= 20000)
+        // KURAL 4: Çifte Yeni Hesap Şüphesi 
+        if ( senderYasi <= 3 && receiverYasi <= 3 && transfer.Amount >= 20000)
         {
             riskScore += 30;
             triggeredRules.Add("Çifte Yeni Hesap: Yeni açılan iki hesap arasında şüpheli transfer.");
         }
         
-        // KURAL 5: Sınır Altı İşlem Şüphesi (+10 Puan)
+        // KURAL 5: Sınır Altı İşlem Şüphesi 
         if (transfer.Amount >= 95000 && transfer.Amount < 100000)
         {
             riskScore += 10;
             triggeredRules.Add("Sınır Altı İşlem Şüphesi (95.000 TL - 100.000 TL)");
         }
 
-        // KURAL 6: Doğal Olmayan Küsuratsız İşlem (+10 Puan)
+        // KURAL 6: Doğal Olmayan Küsuratsız İşlem
         if (transfer.Amount >= 50000 && transfer.Amount % 1000 == 0)
         {
             riskScore += 5;
             triggeredRules.Add("Doğal olmayan küsuratsız işlem");
         }
 
-        // KURAL 7: Uyuyan Hesap Hareketi (+30 Puan)
+        // KURAL 7: Uyuyan Hesap Hareketi 
         var lastTransfer = await _context.Transfers
             .Where(t => t.SenderAccountId == senderAccount.Id && t.IsSuccessful == true)
             .OrderByDescending(t => t.TransferDate)

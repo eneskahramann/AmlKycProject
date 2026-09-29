@@ -66,8 +66,8 @@
             </td>
             <td>
               <div v-if="alert.status === 'Open' || alert.status === 'Açık'" class="action-buttons">
-                <button class="btn-approve" @click="updateStatus(alert.id, 'Approved')">✅ Temiz</button>
-                <button class="btn-reject" @click="updateStatus(alert.id, 'Suspicious')">🚨 Şüpheli</button>
+                <button class="btn-approve" @click="updateStatus(alert.id, 'Onaylandı')">✅ Temiz</button>
+                <button class="btn-reject" @click="updateStatus(alert.id, 'Şüpheli')">🚨 Şüpheli</button>
               </div>
               <div v-else class="text-muted">
                 İncelendi ({{ alert.status }})
@@ -264,7 +264,7 @@ color: #166534;
 }
 
 .btn-approve { 
-  background-color: #10b981; 
+  background-color: #0a7a55; 
 }
 .btn-approve:hover { 
   background-color: #059669; 
