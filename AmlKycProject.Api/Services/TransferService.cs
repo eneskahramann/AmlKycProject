@@ -5,21 +5,28 @@ using System.Text.Json;
 
 namespace AmlKycProject.Api.Services;
 
+
+// TransferService, para transferi işlemlerini yönetir ve risk değerlendirmesi yapar.
 public class TransferService : ITransferService
-{
+{   
+    
     private readonly AmlKycDbContext _context;
     private readonly IRiskService _riskService;
-     
+
+    // Dependency Injection ile DbContext ve RiskService'i alıyoruz. 
     public TransferService(AmlKycDbContext context, IRiskService riskService) 
     {
+        
         _context = context;
         _riskService = riskService;
     }
 
+    // Bu metod, bir transfer işlemini gerçekleştirir ve risk değerlendirmesi yapar.
     public async Task<(bool IsSuccess, string Message, Transfer? TransferRecord)> ExecuteTransferAsync(int senderAccountId, int receiverAccountId, decimal amount)
     {
         // 1. Temel Kontroller
         if (amount <= 0) return (false, "Transfer tutarı 0'dan büyük olmalıdır.", null);
+
         
         if (senderAccountId == receiverAccountId) return (false, "Gönderici ve alıcı hesap aynı olamaz.", null);
 
@@ -34,9 +41,10 @@ public class TransferService : ITransferService
 
         var isSenderSanctioned = await _context.Sanctions.AnyAsync(s => s.IdentityNumber == senderAccount.Customer.IdentityNumber);
         
+        // Alıcı tarafın yaptırım listesinde olup olmadığını kontrol ediyoruz.
         var isReceiverSanctioned = await _context.Sanctions.AnyAsync(s => s.IdentityNumber == receiverAccount.Customer.IdentityNumber);
     
-    if (isSenderSanctioned || isReceiverSanctioned){
+        if (isSenderSanctioned || isReceiverSanctioned){
             var blockedTransfer = new Transfer
             {
                 SenderAccountId = senderAccountId,
@@ -45,13 +53,14 @@ public class TransferService : ITransferService
                 IsSuccessful = false, // Transfer başaşrısız
                 TransferDate = DateTime.UtcNow
             };
-
+            
             _context.Transfers.Add(blockedTransfer);
-            await _context.SaveChangesAsync();// id oluşmaması için kaydetme işlemi burada yapılır
+            await _context.SaveChangesAsync();// Transfer kaydını ekledikten sonra RiskLog ve Alert kayıtlarını oluşturuyoruz.
 
             
             var ruleList = new List<string>{"Sanction Eşleşmesi - İşlem Bloke Edildi"};
-
+            
+            // RiskLog kaydını oluşturuyoruz. Burada risk skoru maksimum olarak belirleniyor ve tetiklenen kurallar JSON formatında saklanıyor.
             var riskLog = new RiskLog
             {
                 TransferId = blockedTransfer.Id,
@@ -62,6 +71,7 @@ public class TransferService : ITransferService
             };
             _context.RiskLogs.Add(riskLog);
 
+            // Alert kaydını oluşturuyoruz. Burada transferin ID'si, risk logu ve durum bilgisi saklanıyor.
             var alert = new Alert
             {
                 TransferId = blockedTransfer.Id,
@@ -90,7 +100,7 @@ public class TransferService : ITransferService
             senderAccount.Balance -= amount;
             receiverAccount.Balance += amount;
 
-            // Transfer kaydını oluştur
+            // Transfer kaydını oluşturup değişiklikleri veri tabanına kaydediyoruz.
             var transfer = new Transfer
             {
                 SenderAccountId = senderAccountId,
@@ -111,12 +121,9 @@ public class TransferService : ITransferService
             // Transactionı onayla 
             await transaction.CommitAsync();
 
-            
-
-            
-        
             return (true, "Transfer başarıyla gerçekleşti.", transfer);
         }
+        
         catch (Exception ex)
         {
             // Herhangi bir hata oluşması durumunda tüm işlemler geri alınır

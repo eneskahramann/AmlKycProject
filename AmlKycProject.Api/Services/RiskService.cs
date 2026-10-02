@@ -7,16 +7,22 @@ namespace AmlKycProject.Api.Services;
 
 public class RiskService : IRiskService
 {
+    
     private readonly AmlKycDbContext _context;
 
+    // Dependency Injection ile DbContext'i alıyoruz.
     public RiskService(AmlKycDbContext context)
     {
         _context = context;
     }
 
-    public async Task EvaluateTransferRiskAsync(Transfer transfer)
+    // Bu metod, bir transfer işleminin risk skorunu değerlendirir ve tetiklenen kuralları kaydeder.
+
+    public async Task EvaluateTransferRiskAsync(Transfer transfer )
     {
+        
         int riskScore = 0;
+        
         var triggeredRules = new List<string>();
 
         // İşlemi yapan gönderici ve alıcının müşteri bilgilerini (TC Kimlik vb.) veritabanından çekiyoruz
@@ -33,7 +39,7 @@ public class RiskService : IRiskService
         if (transfer.Amount > 100000)
         {
             riskScore += 40;
-            triggeredRules.Add("Yüksek Tutar (100.000 TL Üzeri)");
+            triggeredRules.Add("Yüksek Tutar (100.000 TL Üzeri) - 40 Puan");
         }
 
         // KURAL 2: Gece İşlemi 
@@ -41,28 +47,28 @@ public class RiskService : IRiskService
         if (currentHour >= 22 || currentHour < 6)
         {
             riskScore += 20;
-            triggeredRules.Add("Gece İşlemi (22:00 - 06:00)");
+            triggeredRules.Add("Gece İşlemi (22:00 - 06:00) - 20 Puan");
         }
 
         // KURAL 4: Çifte Yeni Hesap Şüphesi 
-        if ( senderYasi <= 3 && receiverYasi <= 3 && transfer.Amount >= 20000)
+        if ( senderYasi <= 3 && receiverYasi <= 3 && transfer.Amount >= 50000)
         {
             riskScore += 30;
-            triggeredRules.Add("Çifte Yeni Hesap: Yeni açılan iki hesap arasında şüpheli transfer.");
+            triggeredRules.Add("Çifte Yeni Hesap Şüphesi - 30 Puan");
         }
         
         // KURAL 5: Sınır Altı İşlem Şüphesi 
         if (transfer.Amount >= 95000 && transfer.Amount < 100000)
         {
             riskScore += 10;
-            triggeredRules.Add("Sınır Altı İşlem Şüphesi (95.000 TL - 100.000 TL)");
+            triggeredRules.Add("Sınır Altı İşlem Şüphesi (95.000 TL - 100.000 TL) - 10 Puan");
         }
 
         // KURAL 6: Doğal Olmayan Küsuratsız İşlem
         if (transfer.Amount >= 50000 && transfer.Amount % 1000 == 0)
         {
             riskScore += 5;
-            triggeredRules.Add("Doğal olmayan küsuratsız işlem");
+            triggeredRules.Add("Doğal olmayan küsuratsız işlem - 5 Puan");
         }
 
         // KURAL 7: Uyuyan Hesap Hareketi 
@@ -75,11 +81,22 @@ public class RiskService : IRiskService
         {
             var daysSinceLastTransfer = (DateTime.UtcNow - lastTransfer.TransferDate).TotalDays;
 
-            if (daysSinceLastTransfer > 90 && transfer.Amount > 75000)
+            if (daysSinceLastTransfer > 10 && transfer.Amount > 75000)
             {
                 riskScore += 20;
-                triggeredRules.Add("Uyuyan Hesap: Uzun süre pasif olan hesaptan yüklü çıkış.");
+                triggeredRules.Add("Uyuyan Hesap Hareketi (10 Gün Üzeri ve 75.000 TL Üzeri) - 20 Puan"); 
             }
+        }
+
+        // KURAL 8: Smurfing (Parçalı Transfer) Şüphesi
+        var totalTransfersLast24Hours = await _context.Transfers
+            .Where(t => t.SenderAccountId == senderAccount.Id && t.TransferDate >= DateTime.UtcNow.AddHours(-24) && t.IsSuccessful == true)
+            .CountAsync();
+
+        if (totalTransfersLast24Hours >= 3 && transfer.Amount > 30000)
+        {
+            riskScore += 15;
+            triggeredRules.Add("Smurfing (Parçalı Transfer) Şüphesi - 15 Puan");
         }
 
         // Skor 100'ü geçmeyecek şekilde sabitlenir
